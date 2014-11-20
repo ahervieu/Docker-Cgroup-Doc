@@ -101,7 +101,18 @@ In the docker node :
 tc class add dev eth0 parent 1: classid 1: htb rate 512kbit
 ```
 
+*Result
+```
+root@b14758fbf91c:/# time(wget http://www.obeo.fr/download/release/designer/6.2/latest/juno3/bundles/ObeoDesigner-6.2-linux.gtk.x86_64.zip)
+--2014-11-20 09:17:11--  http://www.obeo.fr/download/release/designer/6.2/latest/juno3/bundles/ObeoDesigner-6.2-linux.gtk.x86_64.zip
+Resolving www.obeo.fr (www.obeo.fr)... 91.121.50.185
+Connecting to www.obeo.fr (www.obeo.fr)|91.121.50.185|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 376860906 (359M) [application/zip]
+Saving to: 'ObeoDesigner-6.2-linux.gtk.x86_64.zip.1'
 
+18% [====================>                                                                                                  ] 68,745,524  59.6KB/s  eta 84m 13s
+```
 
 
 
