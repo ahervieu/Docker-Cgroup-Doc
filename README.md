@@ -116,25 +116,72 @@ Saving to: 'ObeoDesigner-6.2-linux.gtk.x86_64.zip.1'
 
 
 
+## Limit Reading and Writing speed with Docker
+
+
+ - First start docker deamon with the option -e lxc. 
+ - start a container
+```
+sudo docker run  -i -t ubuntu:14.04 /bin/bash
+```
+
+- get it's id :
+```
+aymeric@cirrus2:~$ sudo docker inspect -f '{{ .Id }}' suspicious_wozniak
+6767ba4a0051fa948dfcfdc41c1a18a28701d899bc1ca6e71cae668947847d60
+
+```
+- go in /sys/fs/cgroup/blkio/docker/ID/
+```
+cd /sys/fs/cgroup/blkio/docker/6767ba4a0051fa948dfcfdc41c1a18a28701d899bc1ca6e71cae668947847d60/
+```
+- Change the right of the file
+```
+sudo chmod u+w blkio.throttle.write_bps_device
+```
+
+Tune the righting speed :
+```
+echo "8:0 20485760" > blkio.throttle.write_bps_device 
+```
+
+#Test
+  - First test with this speed : 
+```
+echo "8:0 20485760" > blkio.throttle.write_bps_device 
+```
+- In the container :
+```
+root@6767ba4a0051:/# time $(dd if=/dev/zero of=testfile0 bs=1000 count=100000 && sync)
+100000+0 records in
+100000+0 records out
+100000000 bytes (100 MB) copied, 0.290006 s, 345 MB/s
+
+real	0m5.305s
+user	0m0.016s
+sys	0m0.326s
+```
+
+-Let's divide the speed by two 
+```
+echo "8:0 10485760" > blkio.throttle.write_bps_device 
+```
+- In the same container :
+```
+time $(dd if=/dev/zero of=testfile0 bs=1000 count=100000 && sync)
+100000+0 records in
+100000+0 records out
+100000000 bytes (100 MB) copied, 0.314431 s, 318 MB/s
+
+real	0m9.907s
+user	0m0.004s
+sys	0m0.364s
+```
 
 
 
 
 
-
-
-
-
-sudo docker run -t -i --cap-add=NET_ADMIN --lxc-conf="lxc.cgroup.net_cls.classid = 0x10002" ubuntu:14.04 /bin/bash
-
-
-sudo docker run --cap-add=NET_ADMIN --lxc-conf="lxc.cgroup.cpuset.cpus = 1" --lxc-conf="lxc.cgroup.net_cls.classid = 0x00100001" --lxc-conf="lxc.cgroup.blkio.throttle.write_bps_device = 8:0 1048576" -i -t ubuntu:14.04 /bin/bash
-
-
-docker run --lxc-conf="lxc.cgroup.blkio.throttle.write_bps_device = 8:1 8389000" --lxc-conf="lxc.cgroup.blkio.throttle.read_bps_device = 8:1 8389000" 
-
-
- 
 
 
 
