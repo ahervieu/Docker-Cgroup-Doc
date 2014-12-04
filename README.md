@@ -178,8 +178,7 @@ user	0m0.004s
 sys	0m0.364s
 ```
 
-
-
+docker run -ti --cpuset=6 agileek/cpuset-test
 
 
 
